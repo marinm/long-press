@@ -75,8 +75,14 @@
 				target.dispatchEvent(new CustomEvent("longpresscancel", {detail: {holdTime}}));
 			}
 
-			target.addEventListener('mousedown', onMouseDown);
-			target.addEventListener('mouseup', onMouseUp);
+
+			if ('ontouchstart' in window) {
+				target.addEventListener('touchstart', onMouseDown);
+				target.addEventListener('touchend', onMouseUp);
+			} else {
+				target.addEventListener('mousedown', onMouseDown);
+				target.addEventListener('mouseup', onMouseUp);
+			}
 		}
 
 		const target = document.querySelector('.target');
