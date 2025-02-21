@@ -26,6 +26,15 @@
 			background-color: gray;
 			border-radius: 50%;
 		}
+		.long-press-start {
+			background-color: green;
+		}
+		.long-press-cancel {
+			background-color: red;
+		}
+		.long-press-end {
+			background-color: lime;
+		}
 	</style>
 </head>
 <body>
@@ -72,12 +81,31 @@
 
 		const target = document.querySelector('.target');
 
-		target.addEventListener('longpressstart', console.log);
-		target.addEventListener('longpresscancel', console.log);
-		target.addEventListener('longpressend', console.log);
+
+		function briefClass(target, className, duration) {
+			target.classList.add(className);
+			setTimeout(() => target.classList.remove(className), duration);
+		}
+
+		target.addEventListener('longpressstart', (event) => {
+			target.classList.remove('long-press-cancel');
+			target.classList.remove('long-press-end');
+			target.classList.add('long-press-start');
+		});
+
+		target.addEventListener('longpresscancel', () => {
+			target.classList.remove('long-press-start');
+			target.classList.remove('long-press-end');
+			briefClass(target, 'long-press-cancel', 500);
+		});
+
+		target.addEventListener('longpressend', () => {
+			target.classList.remove('long-press-start');
+			target.classList.remove('long-press-cancel');
+			briefClass(target, 'long-press-end', 500);
+		});
 
 		longPressable({ holdTime: 1000, selector: '.target' });
-		longPressable({ holdTime: 3000, selector: '.target' });
 	</script>
 </body>
 </html>
