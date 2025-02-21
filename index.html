@@ -26,13 +26,7 @@
 <body>
 	<div class="target"></div>
 	<script>
-		function onLongPress({
-			holdTime,
-			selector,
-			onStart,
-			onCancel,
-			onEnd,
-		}) {
+		function longPressable({ holdTime, selector }) {
 			// Closure state
 			const target = document.querySelector(selector);
 			let timeoutId = null;
@@ -42,7 +36,7 @@
 			function timeoutEnd() {
 				clearTimeout(timeoutId);
 				timeoutId = null;
-				onEnd();
+				target.dispatchEvent(new CustomEvent("longpressend", {detail: {holdTime}}));
 			}
 
 			function onMouseDown() {
@@ -54,7 +48,7 @@
 					return;
 				}
 				timeoutId = setTimeout(timeoutEnd, holdTime);
-				onStart();
+				target.dispatchEvent(new CustomEvent("longpressstart", {detail: {holdTime}}));
 			}
 
 			function onMouseUp() {
@@ -64,28 +58,21 @@
 
 				clearTimeout(timeoutId);
 				timeoutId = null;
-				onCancel();
+				target.dispatchEvent(new CustomEvent("longpresscancel", {detail: {holdTime}}));
 			}
 
 			target.addEventListener('mousedown', onMouseDown);
 			target.addEventListener('mouseup', onMouseUp);
 		}
 
-		onLongPress({
-			holdTime: 1000,
-			selector: '.target',
-			onStart: () => console.log('LongPress start 1000'),
-			onCancel: () => console.log('LongPress cancel 1000'),
-			onEnd: () => console.log('LongPress end 1000'),
-		});
+		const target = document.querySelector('.target');
 
-		onLongPress({
-			holdTime: 3000,
-			selector: '.target',
-			onStart: () => console.log('LongPress start 3000'),
-			onCancel: () => console.log('LongPress cancel 3000'),
-			onEnd: () => console.log('LongPress end 3000'),
-		});
+		target.addEventListener('longpressstart', console.log);
+		target.addEventListener('longpresscancel', console.log);
+		target.addEventListener('longpressend', console.log);
+
+		longPressable({ holdTime: 1000, selector: '.target' });
+		longPressable({ holdTime: 3000, selector: '.target' });
 	</script>
 </body>
 </html>
