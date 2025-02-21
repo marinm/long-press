@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Long-press</title>
+	<style>
+		body {
+			background-color: black;
+			padding: 0;
+			margin: 0;
+			width: 100dvw;
+			height: 100dvh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.target {
+			width: 10ch;
+			height: 10ch;
+			background-color: gray;
+			border-radius: 50%;
+		}
+	</style>
+</head>
+<body>
+	<div class="target"></div>
+	<script>
+		function onLongPress({
+			holdTime,
+			selector,
+			onStart,
+			onCancel,
+			onEnd,
+		}) {
+			// Closure state
+			const target = document.querySelector(selector);
+			let timeoutId = null;
+
+			// Let the value of timeoutId indicate if LongPressEnd has fired
+
+			function timeoutEnd() {
+				clearTimeout(timeoutId);
+				timeoutId = null;
+				onEnd();
+			}
+
+			function onMouseDown() {
+				// If for some reason the timer is already set, do nothing. This
+				// shouldn't happen.
+				if (timeoutId !== null) {
+					console.error('LongPress: error');
+					clearTimeout(timeoutId);
+					return;
+				}
+				timeoutId = setTimeout(timeoutEnd, holdTime);
+				onStart();
+			}
+
+			function onMouseUp() {
+				if (timeoutId === null) {
+					return;
+				}
+
+				clearTimeout(timeoutId);
+				timeoutId = null;
+				onCancel();
+			}
+
+			target.addEventListener('mousedown', onMouseDown);
+			target.addEventListener('mouseup', onMouseUp);
+		}
+
+		onLongPress({
+			holdTime: 1000,
+			selector: '.target',
+			onStart: () => console.log('LongPress start 1000'),
+			onCancel: () => console.log('LongPress cancel 1000'),
+			onEnd: () => console.log('LongPress end 1000'),
+		});
+
+		onLongPress({
+			holdTime: 3000,
+			selector: '.target',
+			onStart: () => console.log('LongPress start 3000'),
+			onCancel: () => console.log('LongPress cancel 3000'),
+			onEnd: () => console.log('LongPress end 3000'),
+		});
+	</script>
+</body>
+</html>
